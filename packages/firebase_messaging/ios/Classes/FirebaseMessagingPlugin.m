@@ -33,6 +33,7 @@
   if (self) {
     _channel = channel;
     _resumingFromBackground = NO;
+      NSLog(@"CHANGING FLAGING onRESUMING");
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
@@ -105,11 +106,22 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-  _resumingFromBackground = YES;
+    _resumingFromBackground = YES;
+    NSLog(@"Masuk did enter background2");
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application{
+  //_resumingFromBackground = NO;
+    NSLog(@"Masuk will Enter Foreground");
+}
+
+-(void)applicationWillResignActive:(UIApplication *)application{
+    NSLog(@"resign active");
+    _resumingFromBackground = YES;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-  _resumingFromBackground = NO;
+    NSLog(@"Masuk did Become Active");
   // Clears push notifications from the notification center, with the
   // side effect of resetting the badge count. We need to clear notifications
   // because otherwise the user could tap notifications in the notification
@@ -125,12 +137,18 @@
   // notifications.
   application.applicationIconBadgeNumber = 1;
   application.applicationIconBadgeNumber = 0;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"changing state to on message");
+        self->_resumingFromBackground = NO;
+    });
 }
 
 - (bool)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+    NSLog(@"receiving Remote NOtification");
   [self didReceiveRemoteNotification:userInfo];
+  //[_channel invokeMethod:@"onResume" arguments:userInfo];
   completionHandler(UIBackgroundFetchResultNoData);
   return YES;
 }

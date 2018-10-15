@@ -34,11 +34,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+
+import android.util.Log;
 
 class FileUtils {
 
   String getPathFromUri(final Context context, final Uri uri) {
+    Log.e("imagePicker","Uri : "+uri.toString());
     String path = getPathFromLocalUri(context, uri);
+    Log.e("imagePicker","path : "+path);
     if (path == null) {
       path = getPathFromRemoteUri(context, uri);
     }
