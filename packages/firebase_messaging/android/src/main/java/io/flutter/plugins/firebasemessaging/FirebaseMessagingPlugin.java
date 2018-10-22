@@ -19,13 +19,15 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+//import jdk.vm.ci.code.Register;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /** FirebaseMessagingPlugin */
 public class FirebaseMessagingPlugin extends BroadcastReceiver
     implements MethodCallHandler, NewIntentListener {
-  private final Registrar registrar;
+  public static Registrar registrar;
   private final MethodChannel channel;
 
   private static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
@@ -33,14 +35,16 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_messaging");
-    final FirebaseMessagingPlugin plugin = new FirebaseMessagingPlugin(registrar, channel);
+    final FirebaseMessagingPlugin plugin = new FirebaseMessagingPlugin(registrar,channel);
     registrar.addNewIntentListener(plugin);
     channel.setMethodCallHandler(plugin);
   }
 
-  private FirebaseMessagingPlugin(Registrar registrar, MethodChannel channel) {
-    this.registrar = registrar;
-    this.channel = channel;
+  private FirebaseMessagingPlugin(Registrar rgt, MethodChannel chn) {
+
+    registrar = rgt;
+    channel = chn;
+
     FirebaseApp.initializeApp(registrar.context());
 
     IntentFilter intentFilter = new IntentFilter();

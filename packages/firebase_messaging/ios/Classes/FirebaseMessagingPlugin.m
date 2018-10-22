@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #import "FirebaseMessagingPlugin.h"
-
+#import <UserNotifications/UserNotifications.h>
 #import "Firebase/Firebase.h"
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-@interface FLTFirebaseMessagingPlugin ()<FIRMessagingDelegate>
+@interface FLTFirebaseMessagingPlugin ()<FIRMessagingDelegate,UNUserNotificationCenterDelegate>
 @end
 #endif
 
@@ -37,6 +37,10 @@
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
+    // if(@available(iOS 10.0, *)) {
+    //     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    //     center.delegate = self;
+    // }
     [FIRMessaging messaging].delegate = self;
   }
   return self;
@@ -59,7 +63,7 @@
     UIUserNotificationSettings *settings =
         [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
     [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-
+    [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"registerNotification"];
     result(nil);
   } else if ([@"configure" isEqualToString:method]) {
     [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -174,9 +178,43 @@
   [_channel invokeMethod:@"onIosSettingsRegistered" arguments:settingsDictionary];
 }
 
+      
+
 - (void)messaging:(nonnull FIRMessaging *)messaging
     didReceiveRegistrationToken:(nonnull NSString *)fcmToken {
   [_channel invokeMethod:@"onToken" arguments:fcmToken];
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification :(UNNotification *)notification withCompletionHandler :(void (^)(UNNotificationPresentationOptions))completionHandler NS_AVAILABLE_IOS(10.0) {
+    NSLog(@"will present local notification");
+    UNNotificationPresentationOptions presentationOptions = 0;
+    NSNumber *presentAlertValue = (NSNumber*)notification.request.content.userInfo[@"presentAlert"];
+    NSNumber *presentSoundValue = (NSNumber*)notification.request.content.userInfo[@"presentSound"];
+    NSNumber *presentBadgeValue = (NSNumber*)notification.request.content.userInfo[@"presentBadge"];
+    bool presentAlert = [presentAlertValue boolValue];
+    bool presentSound = [presentSoundValue boolValue];
+    bool presentBadge = [presentBadgeValue boolValue];
+    if(presentAlert) {
+        presentationOptions |= UNNotificationPresentationOptionAlert;
+    }
+    if(presentSound){
+        presentationOptions |= UNNotificationPresentationOptionSound;
+    }
+    if(presentBadge) {
+        presentationOptions |= UNNotificationPresentationOptionBadge;
+    }
+    completionHandler(presentationOptions);
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+         withCompletionHandler:(void(^)(void))completionHandler {
+  NSDictionary *userInfo = response.notification.request.content.userInfo;
+  NSLog(@"didReceive notification local notification");
+  // Print full message.
+  NSLog(@"%@", userInfo);
+
+  completionHandler();
 }
 
 @end
