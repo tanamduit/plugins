@@ -364,7 +364,7 @@ public class ImagePickerDelegate
     }
 
     if (!permissionGranted) {
-      finishWithSuccess(null);
+      finishWithSuccess("Permission granted");
     }
 
     return true;
@@ -372,21 +372,23 @@ public class ImagePickerDelegate
 
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-    switch (requestCode) {
-      case REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY:
-        handleChooseImageResult(resultCode, data);
-        break;
-      case REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA:
-        handleCaptureImageResult(resultCode);
-        break;
-      case REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY:
-        handleChooseVideoResult(resultCode, data);
-        break;
-      case REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA:
-        handleCaptureVideoResult(resultCode);
-        break;
-      default:
-        return false;
+    if(pendingResult != null){
+      switch (requestCode) {
+        case REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY:
+          handleChooseImageResult(resultCode, data);
+          break;
+        case REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA:
+          handleCaptureImageResult(resultCode);
+          break;
+        case REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY:
+          handleChooseVideoResult(resultCode, data);
+          break;
+        case REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA:
+          handleCaptureVideoResult(resultCode);
+          break;
+        default:
+          return false;
+      }
     }
     return true;
   }
@@ -404,7 +406,7 @@ public class ImagePickerDelegate
     }
 
     // User cancelled choosing a picture.
-    finishWithSuccess(null);
+    finishWithSuccess("canceled");
   }
 
   private void handleChooseVideoResult(int resultCode, Intent data) {
@@ -415,7 +417,7 @@ public class ImagePickerDelegate
     }
 
     // User cancelled choosing a picture.
-    finishWithSuccess(null);
+    finishWithSuccess("canceled");
   }
 
   private void handleCaptureImageResult(int resultCode) {
@@ -436,7 +438,7 @@ public class ImagePickerDelegate
       }
     }
     // User cancelled taking a picture.
-    finishWithSuccess(null);
+    finishWithSuccess("canceled");
   }
 
   private void handleCaptureVideoResult(int resultCode) {
@@ -453,7 +455,7 @@ public class ImagePickerDelegate
     }
 
     // User cancelled taking a picture.
-    finishWithSuccess(null);
+    finishWithSuccess("canceled");
   }
 
   private void handleImageResult(String path) {
