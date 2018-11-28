@@ -5,6 +5,7 @@
 #import "FirebaseMessagingPlugin.h"
 #import <UserNotifications/UserNotifications.h>
 #import "Firebase/Firebase.h"
+#import <ZDCChat/ZDCChat.h>
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @interface FLTFirebaseMessagingPlugin ()<FIRMessagingDelegate,UNUserNotificationCenterDelegate>
@@ -164,7 +165,7 @@
 #else
   [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
 #endif
-
+  [ZDCChat setPushToken:deviceToken];
   [_channel invokeMethod:@"onToken" arguments:[[FIRInstanceID instanceID] token]];
 }
 
