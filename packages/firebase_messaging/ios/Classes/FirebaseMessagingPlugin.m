@@ -165,7 +165,7 @@
 #else
   [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
 #endif
-  [ZDCChat setPushToken:deviceToken];
+  //[ZDCChat setPushToken:deviceToken];
   [_channel invokeMethod:@"onToken" arguments:[[FIRInstanceID instanceID] token]];
 }
 
