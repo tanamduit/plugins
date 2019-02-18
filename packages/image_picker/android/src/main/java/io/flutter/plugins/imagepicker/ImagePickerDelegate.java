@@ -189,7 +189,7 @@ public class ImagePickerDelegate
 
   public void chooseVideoFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
-      finishWithAlreadyActiveError();
+      finishWithAlreadyActiveError(result);
       return;
     }
 
@@ -211,7 +211,7 @@ public class ImagePickerDelegate
 
   public void takeVideoWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
-      finishWithAlreadyActiveError();
+      finishWithAlreadyActiveError(result);
       return;
     }
 
@@ -245,7 +245,7 @@ public class ImagePickerDelegate
 
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
-      finishWithAlreadyActiveError();
+      finishWithAlreadyActiveError(result);
       return;
     }
 
@@ -266,7 +266,7 @@ public class ImagePickerDelegate
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
-      finishWithAlreadyActiveError();
+      finishWithAlreadyActiveError(result);
       return;
     }
 
@@ -500,8 +500,9 @@ public class ImagePickerDelegate
     clearMethodCallAndResult();
   }
 
-  private void finishWithAlreadyActiveError() {
-    finishWithError("already_active", "Image picker is already active");
+  private void finishWithAlreadyActiveError(MethodChannel.Result result) {
+    //finishWithError("already_active", "Image picker is already active");
+    result.error("already_active", "Image picker is already active", null);
   }
 
   private void finishWithError(String errorCode, String errorMessage) {
