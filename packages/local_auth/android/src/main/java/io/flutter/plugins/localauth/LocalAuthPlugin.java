@@ -5,12 +5,15 @@
 package io.flutter.plugins.localauth;
 
 import android.app.Activity;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import androidx.fragment.app.FragmentActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** LocalAuthPlugin */
@@ -45,9 +48,17 @@ public class LocalAuthPlugin implements MethodCallHandler {
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
       }
+      if (!(activity instanceof FragmentActivity)) {
+        result.error(
+            "no_fragment_activity",
+            "local_auth plugin requires activity to be a FragmentActivity.",
+            null);
+        return;
+      }
+
       AuthenticationHelper authenticationHelper =
           new AuthenticationHelper(
-              activity,
+              (FragmentActivity) activity,
               call,
               new AuthCompletionHandler() {
                 @Override
@@ -70,12 +81,12 @@ public class LocalAuthPlugin implements MethodCallHandler {
                     result.error(code, error, null);
                   }
                 }
-              });
+            });
       authenticationHelper.authenticate();
     } else if(call.method.equals("isFingerPrintAvailable")){
       Activity activity = registrar.activity();
       AuthenticationHelper authenticationHelper = new AuthenticationHelper(
-        activity,
+        (FragmentActivity)activity,
         call,
         null
       );
